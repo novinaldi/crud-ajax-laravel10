@@ -3,7 +3,19 @@
 @section('content')
     <div class="card">
         <div class="card-header">
-            Data Customer
+            <div class="d-flex justify-content-between">
+                <div>
+                    Data Customer
+                </div>
+                <div>
+                    <button type="button" class="btn btn-sm btn-primary" id="btnAdd">
+                        <i class="fas fa-plus"></i> Add New
+                    </button>
+                    <button type="button" class="btn btn-sm btn-info" id="btnEdit">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                </div>
+            </div>
         </div>
         <div class="card-body">
             <table id="datacustomer" class="display table table-sm table-striped">
@@ -15,24 +27,56 @@
                         <th>Address</th>
                         <th>Email</th>
                         <th>Phone</th>
+                        <th>#</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {{-- @foreach ($data as $d) --}}
-                    {{-- <tr> --}}
-                    {{-- <td>{{ $loop->iteration }}</td> --}}
-                    {{-- <td>{{ $d->fullname }}</td>
-                            <td>{{ $d->gender }}</td>
-                            <td>{{ $d->email }}</td>
-                            <td>{{ $d->address }}</td>
-                            <td>{{ $d->phone }}</td>
-                        </tr>
-                    @endforeach --}}
                 </tbody>
             </table>
         </div>
     </div>
+    <div class="viewmodal" style="display: none;"></div>
     <script>
+        function removedata(id) {
+            iziToast.show({
+                theme: 'dark',
+                icon: 'fas fa-question-circle',
+                title: 'Warning',
+                message: 'Are you sure delete this data ?',
+                position: 'center', // bottomRight, bottomLeft, topRight, topLeft, topCenter, bottomCenter
+                progressBarColor: 'rgb(0, 255, 184)',
+                buttons: [
+                    ['<button>Ok</button>', function(instance, toast) {
+                        $.ajaxSetup({
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            }
+                        });
+                        $.ajax({
+                            type: "DELETE",
+                            url: "{{ url('customer') }}" + '/' + id,
+                            dataType: "json",
+                            success: function(response) {
+                                iziToast.success({
+                                    title: 'Success',
+                                    message: response.success,
+                                    position: 'topCenter'
+                                });
+                                $('#datacustomer').DataTable().ajax.reload();
+                            },
+                            error: function(e) {
+                                alert(e.responseText);
+                            }
+                        });
+                    }, true], // true to focus
+                    ['<button>Close</button>', function(instance, toast) {
+                        instance.hide({
+                            transitionOut: 'fadeOutUp',
+                        }, toast);
+                    }]
+                ]
+            });
+        }
         $(document).ready(function() {
             $('#datacustomer').DataTable({
                 processing: true,
@@ -62,13 +106,50 @@
                         data: 'phone',
                         name: 'phone'
                     },
-                    // {
-                    //     data: 'action',
-                    //     name: 'action',
-                    //     orderable: false,
-                    //     searchable: false
-                    // },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
+                    }
                 ]
+            });
+
+            $('#btnAdd').click(function(e) {
+                e.preventDefault();
+                $.ajax({
+                    type: "GET",
+                    url: "{{ url('customer/form') }}",
+                    data: {
+                        st: 'new'
+                    },
+                    success: function(response) {
+                        $('.viewmodal').html(response).show();
+                        $('#modalnew').on('shown.bs.modal', function(e) {
+                            $('#fullname').focus();
+                        });
+                        $('#modalnew').modal('show');
+                    },
+                    error: function(e) {
+                        alert(e.responseText);
+                    }
+                });
+            });
+            $('#btnEdit').click(function(e) {
+                e.preventDefault();
+                $.ajax({
+                    type: "GET",
+                    url: "{{ url('customer/form') }}",
+                    data: {
+                        st: 'edit'
+                    },
+                    success: function(response) {
+                        alert(response);
+                    },
+                    error: function(e) {
+                        alert(e.responseText);
+                    }
+                });
             });
         });
     </script>

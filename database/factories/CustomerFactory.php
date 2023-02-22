@@ -21,7 +21,8 @@ class CustomerFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'address' => '',
             'phone' => rand(1, 999999999999),
-            'gender' => 'M'
+            'gender' => 'M',
+            'photo' =>''
         ];
     }
 }

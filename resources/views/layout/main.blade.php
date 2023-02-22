@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>CRUD Ajax Jquery</title>
     <link href="{{ asset('/') }}assets/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
@@ -11,10 +12,11 @@
     <link href="{{ asset('/') }}assets/css/style.css" rel="stylesheet">
     <link href="{{ asset('/') }}assets/plugins/datatable/dataTables.bootstrap5.min.css" rel="stylesheet">
     <link href="{{ asset('/') }}assets/plugins/datatable/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="{{ asset('/') }}assets/plugins/izitoast/css/iziToast.min.css" rel="stylesheet">
 
     <script src="{{ asset('/') }}assets/js/jquery-3.6.3.min.js"></script>
-    <script src="{{ asset('/') }}assets/plugins/datatable/jquery.dataTables.min.js">
-    </script>
+    <script src="{{ asset('/') }}assets/plugins/datatable/jquery.dataTables.min.js"></script>
+    <script src="{{ asset('/') }}assets/plugins/izitoast/js/iziToast.min.js"></script>
 </head>
 
 <body>
@@ -31,7 +33,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->segment('1') == 'students' ? 'active' : 'text-secondary' }}"
+                    <a class="nav-link {{ request()->segment('1') == 'customer' ? 'active' : 'text-secondary' }}"
                         href="{{ url('customer') }}">
                         <i class="fas fa-user"></i>&nbsp;
                         <span class="text">Customer</span>

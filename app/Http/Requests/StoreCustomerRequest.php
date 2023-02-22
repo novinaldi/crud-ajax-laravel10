@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\File;
 
 class StoreCustomerRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class StoreCustomerRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +23,12 @@ class StoreCustomerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'fullname' => 'required',
+            'address' => 'required',
+            'gender' => 'required',
+            'email' => 'required|email|unique:customers',
+            'phone' => 'required|numeric',
+            'photo' => 'mimes:jpg,png,jpeg|max:2048'
         ];
     }
 }

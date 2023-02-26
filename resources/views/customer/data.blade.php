@@ -11,9 +11,6 @@
                     <button type="button" class="btn btn-sm btn-primary" id="btnAdd">
                         <i class="fas fa-plus"></i> Add New
                     </button>
-                    <button type="button" class="btn btn-sm btn-info" id="btnEdit">
-                        <i class="fas fa-edit"></i> Edit
-                    </button>
                 </div>
             </div>
         </div>
@@ -36,7 +33,25 @@
         </div>
     </div>
     <div class="viewmodal" style="display: none;"></div>
+    <div class="viewmodaledit" style="display: none;"></div>
     <script>
+        function editdata(id) {
+            $.ajax({
+                type: "GET",
+                url: "{{ url('customer') }}" + '/' + id,
+                success: function(response) {
+                    $('.viewmodaledit').html(response).show();
+                    $('#modaledit').on('shown.bs.modal', function(e) {
+                        $('#fullname').focus();
+                    });
+                    $('#modaledit').modal('show');
+                },
+                error: function(e) {
+                    alert(e.responseText);
+                }
+            });
+        }
+
         function removedata(id) {
             iziToast.show({
                 theme: 'dark',

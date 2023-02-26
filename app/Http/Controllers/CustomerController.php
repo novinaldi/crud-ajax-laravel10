@@ -42,10 +42,16 @@ class CustomerController extends Controller
         if ($request->ajax()) {
             $st = $request->query('st');
             if ($st == 'new') {
-                return view('customer.modal')->fragment('modal-add');
-            }
-            if ($st == 'edit') {
-                return view('customer.modal')->fragment('modal-edit');
+                $data = [
+                    'idcustomer' => "",
+                    'fullname' => "",
+                    'gender' => "",
+                    'address' => "",
+                    'email' => "",
+                    'phone' => "",
+                    'photo' => ''
+                ];
+                return view('customer.modal')->with($data)->fragment('modal-add');
             }
         }
     }
@@ -90,9 +96,19 @@ class CustomerController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Customer $customer): Response
+    public function show($id)
     {
-        //
+        $customer = Customer::find($id);
+        $data = [
+            'idcustomer' => $id,
+            'fullname' => $customer->fullname,
+            'gender' => $customer->gender,
+            'address' => $customer->address,
+            'email' => $customer->email,
+            'phone' => $customer->phone,
+            'photo' => $customer->photo,
+        ];
+        return view('customer.modal')->with($data)->fragment('modal-edit');
     }
 
     /**
@@ -106,9 +122,33 @@ class CustomerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateCustomerRequest $request, Customer $customer): RedirectResponse
+    public function update(UpdateCustomerRequest $request, $id)
     {
-        //
+        $validate = $request->validated();
+        $customer = Customer::find($id);
+
+        if ($request->hasFile('photo')) {
+            $path = time() . '.' . $request->photo->extension();
+
+            if (File::exists(public_path('images/' . $customer->photo))) {
+                File::delete(public_path('images/' . $customer->photo));
+            }
+            $request->photo->move(public_path('images'), $path);
+        } else {
+            $path = $customer->photo;
+        }
+
+        $customer->fullname = $request->fullname;
+        $customer->gender = $request->gender;
+        $customer->email = $request->email;
+        $customer->address = $request->address;
+        $customer->phone = $request->phone;
+        $customer->photo = $path;
+        $customer->save();
+
+        echo json_encode([
+            'success' => 'data updated successfully'
+        ]);
     }
 
     /**
@@ -117,7 +157,7 @@ class CustomerController extends Controller
     public function destroy($id)
     {
         $data = Customer::find($id);
-        if (File::exists(public_path('images/'.$data->photo))) {
+        if (File::exists(public_path('images/' . $data->photo))) {
             File::delete(public_path('images/' . $data->photo));
         }
         $data->delete();
